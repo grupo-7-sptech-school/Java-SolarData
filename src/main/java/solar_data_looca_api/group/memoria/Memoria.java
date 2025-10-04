@@ -1,8 +1,8 @@
-package com.github.britooo.looca.api.group.memoria;
+package solar_data_looca_api.group.memoria;
 
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
-import com.github.britooo.looca.api.util.Conversor;
+import solar_data_looca_api.util.Conversor;
 
 public class Memoria {
 

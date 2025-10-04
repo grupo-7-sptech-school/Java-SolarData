@@ -1,4 +1,4 @@
-package com.github.britooo.looca.api.util;
+package solar_data_looca_api.util;
 
 import java.util.concurrent.TimeUnit;
 

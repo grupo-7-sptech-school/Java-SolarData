@@ -1,4 +1,4 @@
-package com.github.britooo.looca.api.banco;
+package solar_data_looca_api.banco;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;

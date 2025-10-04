@@ -1,4 +1,4 @@
-package com.github.britooo.looca.api.group.processador;
+package solar_data_looca_api.group.processador;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

@@ -1,10 +1,10 @@
-package com.github.britooo.looca.api.main;
+package solar_data_looca_api.main;
 
-import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.memoria.Memoria;
-import com.github.britooo.looca.api.group.processador.Processador;
-import com.github.britooo.looca.api.group.processos.Processo;
-import com.github.britooo.looca.api.group.processos.ProcessoGrupo;
+import solar_data_looca_api.core.Looca;
+import solar_data_looca_api.group.memoria.Memoria;
+import solar_data_looca_api.group.processador.Processador;
+import solar_data_looca_api.group.processos.Processo;
+import solar_data_looca_api.group.processos.ProcessoGrupo;
 import java.sql.*;
 
 import java.util.List;
@@ -54,12 +54,14 @@ public class Main {
     }
 
     private static void inserirProcessos(Connection connection, List<Processo> processos, Processador proc1, Memoria mem1) throws SQLException {
-
         for (int i = 0; i < Math.min(100, processos.size()); i++) {
             Processo p = processos.get(i);
 
             PreparedStatement conexaoBD = connection.prepareStatement(
                     "INSERT INTO monitoramento (pid, nome_processo, uso_cpu, uso_ram) VALUES (?, ?, ?, ?)");
+
+            PreparedStatement conexaoBDquente = connection.prepareStatement(
+                    "INSERT INTO monitoramentoQuente (pid, nome_processo, uso_cpu, uso_ram) VALUES (?, ?, ?, ?)");
 
             Integer totalNucleos = proc1.getNumeroCpusLogicas();
             double memoriaGB = mem1.getTotal() / (1024.0 * 1024.0 * 1024.0);
@@ -75,8 +77,21 @@ public class Main {
             conexaoBD.executeUpdate();
             conexaoBD.close();
 
-            System.out.printf("Inserido: PID: %d | Nome: %s | CPU: %.2f%% | RAM: %.2f%%\n",
-                    p.getPid(), p.getNome(), porcentagemCPU, porcentagemRAM);
+
+            if (porcentagemCPU > 1.){
+                conexaoBDquente.setInt(1, p.getPid());
+                conexaoBDquente.setString(2, p.getNome());
+                conexaoBDquente.setDouble(3, porcentagemCPU);
+                conexaoBDquente.setDouble(4, porcentagemRAM);
+
+                conexaoBDquente.executeUpdate();
+                conexaoBD.close();
+            }
+
+            if (i == 0){
+                System.out.println("Inserindo registros, aguarde...");
+            }
         }
+        System.out.println("Registros inseridos com sucesso!");
     }
 }

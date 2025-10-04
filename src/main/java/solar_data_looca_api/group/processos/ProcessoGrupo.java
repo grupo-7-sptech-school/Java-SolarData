@@ -1,4 +1,4 @@
-package com.github.britooo.looca.api.group.processos;
+package solar_data_looca_api.group.processos;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import oshi.software.os.OSProcess;
 import java.util.stream.Collectors;
 
 import oshi.software.os.OperatingSystem;
-import com.github.britooo.looca.api.group.memoria.Memoria;
+import solar_data_looca_api.group.memoria.Memoria;
 
 public class ProcessoGrupo {
 

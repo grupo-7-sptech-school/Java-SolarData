@@ -1,9 +1,7 @@
-package com.github.britooo.looca.api.group.processos;
+package solar_data_looca_api.group.processos;
 
 import oshi.software.os.OSProcess;
-import com.github.britooo.looca.api.group.memoria.Memoria;
-
-import java.util.List;
+import solar_data_looca_api.group.memoria.Memoria;
 
 public class Processo {
 
