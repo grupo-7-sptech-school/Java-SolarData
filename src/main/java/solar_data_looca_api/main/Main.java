@@ -12,9 +12,9 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException {
 
-        String Banco = "jdbc:mysql://localhost:3306/meubanco";
-        String user = "aluno";
-        String password = "sptech";
+        String Banco = "jdbc:mysql://localhost:3306/solarData";
+        String user = "solardata";
+        String password = "solar@data";
 
                 try (Connection connection = DriverManager.getConnection(Banco, user, password)) {
                 System.out.println("Conectado ao banco de dados");
@@ -58,10 +58,10 @@ public class Main {
             Processo p = processos.get(i);
 
             PreparedStatement conexaoBD = connection.prepareStatement(
-                    "INSERT INTO monitoramento (pid, nome_processo, uso_cpu, uso_ram) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO ProcessoFrio (pid, nome, cpuPorcentagem, ramPorcentagem) VALUES (?, ?, ?, ?)");
 
             PreparedStatement conexaoBDquente = connection.prepareStatement(
-                    "INSERT INTO monitoramentoQuente (pid, nome_processo, uso_cpu, uso_ram) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO ProcessoQuente (pid, nome, cpuPorcentagem, ramPorcentagem) VALUES (?, ?, ?, ?)");
 
             Integer totalNucleos = proc1.getNumeroCpusLogicas();
             double memoriaGB = mem1.getTotal() / (1024.0 * 1024.0 * 1024.0);

@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
         public ConexaoBanco() {
             BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl("jdbc:h2:mem:db_musica");
+            basicDataSource.setUrl("jdbc:h2:mem:solarData");
             basicDataSource.setUsername("sa");
             basicDataSource.setPassword("");
 
