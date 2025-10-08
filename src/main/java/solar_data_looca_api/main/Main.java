@@ -6,15 +6,19 @@ import solar_data_looca_api.group.processador.Processador;
 import solar_data_looca_api.group.processos.Processo;
 import solar_data_looca_api.group.processos.ProcessoGrupo;
 import java.sql.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, UnknownHostException {
 
-        String Banco = "jdbc:mysql://localhost:3306/solarData";
-        String user = "solardata";
-        String password = "solar@data";
+        String Banco = "jdbc:mysql://localhost:3306/solarData01";
+        String user = "aluno";
+        String password = "sptech";
+
 
                 try (Connection connection = DriverManager.getConnection(Banco, user, password)) {
                 System.out.println("Conectado ao banco de dados");
@@ -26,7 +30,6 @@ public class Main {
                 List<Processo> processos = processoGrupo.getProcessos();
 
                 ordenarProcessos(processos);
-
                 inserirProcessos(connection, processos, proc1, mem1);
             }
 
@@ -53,15 +56,16 @@ public class Main {
         }
     }
 
-    private static void inserirProcessos(Connection connection, List<Processo> processos, Processador proc1, Memoria mem1) throws SQLException {
+    private static void inserirProcessos(Connection connection, List<Processo> processos, Processador proc1, Memoria mem1) throws SQLException, UnknownHostException {
+
+        String hostname = InetAddress.getLocalHost().getHostName();
+        int hostNumerico = hostname.hashCode() & 0x7FFFFFFF;
+
         for (int i = 0; i < Math.min(100, processos.size()); i++) {
             Processo p = processos.get(i);
 
             PreparedStatement conexaoBD = connection.prepareStatement(
-                    "INSERT INTO ProcessoFrio (pid, nome, cpuPorcentagem, ramPorcentagem) VALUES (?, ?, ?, ?)");
-
-            PreparedStatement conexaoBDquente = connection.prepareStatement(
-                    "INSERT INTO ProcessoQuente (pid, nome, cpuPorcentagem, ramPorcentagem) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO Processo (pid, nome, cpuPorcentagem, ramPorcentagem, fkMaquina, tipo) VALUES (?, ?, ?, ?, ?, ?)");
 
             Integer totalNucleos = proc1.getNumeroCpusLogicas();
             double memoriaGB = mem1.getTotal() / (1024.0 * 1024.0 * 1024.0);
@@ -69,24 +73,20 @@ public class Main {
             double porcentagemRAM = (ramGB / memoriaGB) * 100.0;
             double porcentagemCPU = p.getUsoCpu() / totalNucleos;
 
+            if (porcentagemCPU > 1. || porcentagemRAM > 5.){
+                conexaoBD.setString(6, "QUENTE");
+            }else {
+                conexaoBD.setString(6, "FRIO");
+            }
+
             conexaoBD.setInt(1, p.getPid());
             conexaoBD.setString(2, p.getNome());
             conexaoBD.setDouble(3, porcentagemCPU);
             conexaoBD.setDouble(4, porcentagemRAM);
+            conexaoBD.setInt(5, hostNumerico);
 
             conexaoBD.executeUpdate();
             conexaoBD.close();
-
-
-            if (porcentagemCPU > 1.){
-                conexaoBDquente.setInt(1, p.getPid());
-                conexaoBDquente.setString(2, p.getNome());
-                conexaoBDquente.setDouble(3, porcentagemCPU);
-                conexaoBDquente.setDouble(4, porcentagemRAM);
-
-                conexaoBDquente.executeUpdate();
-                conexaoBD.close();
-            }
 
             if (i == 0){
                 System.out.println("Inserindo registros, aguarde...");
