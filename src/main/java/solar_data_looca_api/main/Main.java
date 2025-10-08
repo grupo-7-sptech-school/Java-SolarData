@@ -16,8 +16,8 @@ public class Main {
     public static void main(String[] args) throws SQLException, UnknownHostException {
 
         String Banco = "jdbc:mysql://localhost:3306/solarData01";
-        String user = "aluno";
-        String password = "sptech";
+        String user = "solardata";
+        String password = "Solar@Data01";
 
 
                 try (Connection connection = DriverManager.getConnection(Banco, user, password)) {
