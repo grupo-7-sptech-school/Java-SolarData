@@ -60,7 +60,7 @@ public class Main {
 
         String hostname = InetAddress.getLocalHost().getHostName();
         int hostNumerico = hostname.hashCode() & 0x7FFFFFFF;
-
+        System.out.println(hostNumerico);
         for (int i = 0; i < Math.min(100, processos.size()); i++) {
             Processo p = processos.get(i);
 
