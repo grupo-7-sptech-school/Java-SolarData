@@ -25,5 +25,5 @@ fi
 chmod +x java.sh
 chmod +x python.sh
 
-./java.sh
-./python.sh
+nohup ./java.sh > output1.log 2>&1 &
+nohup ./python.sh > output2.log 2>&1 &
