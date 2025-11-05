@@ -8,40 +8,55 @@ import solar_data_looca_api.group.processos.ProcessoGrupo;
 import java.sql.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException, UnknownHostException {
 
-        String Banco = "jdbc:mysql://localhost:3306/solarData01";
+        String Banco = "jdbc:mysql://34.198.76.254:3306/solarData01";
         String user = "solardata";
         String password = "Solar@Data01";
 
+        try (Connection connection = DriverManager.getConnection(Banco, user, password)) {
+            System.out.println("Conectado ao banco de dados");
 
-                try (Connection connection = DriverManager.getConnection(Banco, user, password)) {
-                System.out.println("Conectado ao banco de dados");
+            Looca looca = new Looca();
+            Processador proc1 = new Processador();
+            Memoria mem1 = new Memoria();
+            ProcessoGrupo processoGrupo = new ProcessoGrupo();
+            List<Processo> processos = processoGrupo.getProcessos();
 
-                Looca looca = new Looca();
-                Processador proc1 = new Processador();
-                Memoria mem1 = new Memoria();
-                ProcessoGrupo processoGrupo = new ProcessoGrupo();
-                List<Processo> processos = processoGrupo.getProcessos();
+            String hostname = InetAddress.getLocalHost().getHostName();
 
-                ordenarProcessos(processos);
-                inserirProcessos(connection, processos, proc1, mem1);
-            }
+            inserirHostnameSeNecessario(connection, hostname);
 
+            ordenarProcessos(processos);
+            inserirProcessos(connection, processos, proc1, mem1, hostname);
+        }
     }
 
+    private static void inserirHostnameSeNecessario(Connection connection, String hostname) throws SQLException {
+        String verificarSql = "SELECT COUNT(*) FROM Maquina WHERE hostname = ?";
+        try (PreparedStatement verificarStmt = connection.prepareStatement(verificarSql)) {
+            verificarStmt.setString(1, hostname);
+            ResultSet rs = verificarStmt.executeQuery();
 
+            if (rs.next() && rs.getInt(1) == 0) {
+                String inserirSql = "INSERT INTO Maquina (hostname) VALUES (?)";
+                try (PreparedStatement inserirStmt = connection.prepareStatement(inserirSql)) {
+                    inserirStmt.setString(1, hostname);
+                    inserirStmt.executeUpdate();
+                    System.out.println("Hostname inserido: " + hostname);
+                }
+            } else {
+                System.out.println("Hostname já existe no banco: " + hostname);
+            }
+        }
+    }
 
     private static void ordenarProcessos(List<Processo> processos) {
-
         for (int i = 0; i < processos.size() - 1; i++) {
             int maiorValor = i;
-
 
             for (int j = i + 1; j < processos.size(); j++) {
                 if (processos.get(j).getUsoCpu() > processos.get(maiorValor).getUsoCpu()) {
@@ -56,11 +71,9 @@ public class Main {
         }
     }
 
-    private static void inserirProcessos(Connection connection, List<Processo> processos, Processador proc1, Memoria mem1) throws SQLException, UnknownHostException {
+    private static void inserirProcessos(Connection connection, List<Processo> processos, Processador proc1, Memoria mem1, String hostname) throws SQLException {
+        System.out.println("Hostname: " + hostname);
 
-        String hostname = InetAddress.getLocalHost().getHostName();
-        int hostNumerico = hostname.hashCode() & 0x7FFFFFFF;
-        System.out.println(hostNumerico);
         for (int i = 0; i < Math.min(100, processos.size()); i++) {
             Processo p = processos.get(i);
 
@@ -73,9 +86,9 @@ public class Main {
             double porcentagemRAM = (ramGB / memoriaGB) * 100.0;
             double porcentagemCPU = p.getUsoCpu() / totalNucleos;
 
-            if (porcentagemCPU > 1. || porcentagemRAM > 5.){
+            if (porcentagemCPU > 1. || porcentagemRAM > 5.) {
                 conexaoBD.setString(6, "QUENTE");
-            }else {
+            } else {
                 conexaoBD.setString(6, "FRIO");
             }
 
@@ -83,12 +96,12 @@ public class Main {
             conexaoBD.setString(2, p.getNome());
             conexaoBD.setDouble(3, porcentagemCPU);
             conexaoBD.setDouble(4, porcentagemRAM);
-            conexaoBD.setInt(5, hostNumerico);
+            conexaoBD.setString(5, hostname);
 
             conexaoBD.executeUpdate();
             conexaoBD.close();
 
-            if (i == 0){
+            if (i == 0) {
                 System.out.println("Inserindo registros, aguarde...");
             }
         }
