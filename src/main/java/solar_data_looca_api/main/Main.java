@@ -49,7 +49,7 @@ public class Main {
     }
 
     private static void executarColeta() throws SQLException, UnknownHostException, SocketException {
-        String Banco = "jdbc:mysql://34.198.76.254:3306/solarData01";
+        String Banco = "jdbc:mysql://34.198.76.254/solarData01";
         String user = "solardata";
         String password = "Solar@Data01";
 
@@ -69,12 +69,33 @@ public class Main {
             Processador proc1 = new Processador();
             Memoria mem1 = new Memoria();
             ProcessoGrupo processoGrupo = new ProcessoGrupo();
-            List<Processo> processos = processoGrupo.getProcessos();
+            List<Processo> processos = processoGrupo.getProcessosRelevantes();          
 
             ordenarProcessos(processos);
             inserirProcessos(connection, processos, proc1, mem1);
 
             System.out.println("Execucao " + execucaoAtual + " completada");
+
+ 	    exibirEstatisticasProcessos(processoGrupo);
+        }
+    }
+
+    private static void exibirEstatisticasProcessos(ProcessoGrupo processoGrupo) {
+        List<Processo> processosSistema = processoGrupo.getProcessosSistema();
+        List<Processo> processosUsuario = processoGrupo.getProcessosUsuario();
+        List<Processo> processosRelevantes = processoGrupo.getProcessosRelevantes();
+
+        System.out.println("Estatísticas de Processos Linux");
+        System.out.println("- Processos do SO: " + processosSistema.size());
+        System.out.println("- Processos do usuário: " + processosUsuario.size());
+        System.out.println("- Processos relevantes: " + processosRelevantes.size());
+        System.out.println("- Total de processos: " + processoGrupo.getTotalProcessos());
+
+        if (!processosSistema.isEmpty()) {
+            System.out.println("\nPrincipais processos do sistema detectados:");
+            processosSistema.stream()
+                .limit(5)
+                .forEach(p -> System.out.println("  - " + p.getNome() + " (PID: " + p.getPid() + ")"));
         }
     }
 

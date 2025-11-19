@@ -65,6 +65,40 @@ public class ProcessoGrupo {
     return String.format("\nLista de processos\nTotal de processos ativos: %d\nTotal de threads: %d\nProcessos: %s",
         this.getTotalProcessos(), this.getTotalThreads(), this.getProcessos());
   }
+      /**
+     * Retorna apenas processos do usuário, filtrando processos do sistema operacional Linux
+     */
+    public List<Processo> getProcessosUsuario() {
+        return this.os.getProcesses()
+            .stream()
+            .map(ProcessoGrupo::of)
+            .filter(processo -> processo != null && 
+                    ProcessoFiltro.isProcessoUsuario(processo.getNome(), processo.getPid()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Retorna apenas processos relevantes (usuário + uso significativo de recursos)
+     */
+    public List<Processo> getProcessosRelevantes() {
+        return this.os.getProcesses()
+            .stream()
+            .map(ProcessoGrupo::of)
+            .filter(processo -> ProcessoFiltro.isProcessoRelevante(processo, 0.1, 0.1)) // 0.1% CPU e 0.1% RAM
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Retorna apenas processos do sistema operacional Linux
+     */
+    public List<Processo> getProcessosSistema() {
+        return this.os.getProcesses()
+            .stream()
+            .map(ProcessoGrupo::of)
+            .filter(processo -> processo != null && 
+                    ProcessoFiltro.isProcessoSistema(processo.getNome(), processo.getPid()))
+            .collect(Collectors.toList());
+    }
 }
 
 
