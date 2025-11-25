@@ -268,7 +268,7 @@ public class Main {
                 Integer totalNucleos = proc1.getNumeroCpusLogicas();
                 double memoriaGB = mem1.getTotal() / (1024.0 * 1024.0 * 1024.0);
                 double ramGB = p.getUsoMemoria();
-                double porcentagemRAM = (ramGB / memoriaGB) * 100.0;
+                double porcentagemRAM = p.getUsoMemoria();
                 double porcentagemCPU = p.getUsoCpu() / totalNucleos;
 
                 String tipo = (porcentagemCPU > 1. || porcentagemRAM > 5.) ? "QUENTE" : "FRIO";
