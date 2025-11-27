@@ -267,9 +267,8 @@ public class Main {
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 Integer totalNucleos = proc1.getNumeroCpusLogicas();
 
-                double totalRam = mem1.getTotal();
-                double ramProcesso = p.getUsoMemoria();
-                double porcentagemRAM = (ramProcesso/ totalRam) * 100.0;
+                //double totalRam = mem1.getTotal();
+                double porcentagemRAM = p.getUsoMemoria();
 
                 double porcentagemCPU = p.getUsoCpu() / totalNucleos;
 
