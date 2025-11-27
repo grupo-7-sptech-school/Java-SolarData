@@ -266,9 +266,11 @@ public class Main {
             String sql = "INSERT INTO Processo (pid, nome, cpuPorcentagem, ramPorcentagem, fkMaquina, tipo) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 Integer totalNucleos = proc1.getNumeroCpusLogicas();
-                double memoriaGB = mem1.getTotal() / (1024.0 * 1024.0 * 1024.0);
-                double ramGB = p.getUsoMemoria();
-                double porcentagemRAM = p.getUsoMemoria();
+
+                double totalRam = mem1.getTotal();
+                double ramProcesso = p.getUsoMemoria();
+                double porcentagemRAM = (ramProcesso/ totalRam) * 100.0;
+
                 double porcentagemCPU = p.getUsoCpu() / totalNucleos;
 
                 String tipo = (porcentagemCPU > 1. || porcentagemRAM > 5.) ? "QUENTE" : "FRIO";
